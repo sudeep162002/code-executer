@@ -1,0 +1,33 @@
+# Ignore node_modules directory
+node_modules/
+
+# Ignore .env files
+.env
+
+# Ignore log files
+*.log
+
+# Ignore compiled JavaScript files
+*.js
+
+# Ignore operating system or editor files
+.DS_Store
+Thumbs.db
+
+# Ignore npm debug log
+npm-debug.log
+
+# Ignore IDE or editor specific files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Ignore OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

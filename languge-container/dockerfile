@@ -1,0 +1,11 @@
+# Use a base image with Java installed
+FROM openjdk:latest
+
+# Set working directory
+WORKDIR /app
+
+# Create an empty file to serve as a placeholder
+RUN touch placeholder.java
+
+# Define default command
+CMD ["bash"]
