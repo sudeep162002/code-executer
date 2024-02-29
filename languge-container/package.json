@@ -4,18 +4,23 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "nodemon --exec ts-node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.11.24",
+    "@types/react": "^18.2.61",
+    "@types/react-dom": "^18.2.19",
     "avsc": "^5.7.7",
     "kafka-node": "^5.0.0",
     "node-rdkafka": "^2.18.0",
     "node-redis-pubsub": "^5.0.0",
     "nodemon": "^3.1.0",
-    "redis": "^4.6.13"
+    "redis": "^4.6.13",
+    "typescript": "^5.3.3"
   },
   "devDependencies": {}
 }
