@@ -7,9 +7,6 @@ node_modules/
 # Ignore log files
 *.log
 
-# Ignore compiled JavaScript files
-*.js
-
 # Ignore operating system or editor files
 .DS_Store
 Thumbs.db
