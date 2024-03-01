@@ -11,6 +11,10 @@ const consumer = kafka.consumer({ groupId: 'kafka' });
 
 const cppFilePath = 'input.cpp';
 
+async function runWorker(id: string, username:string,paylode:any){
+        await copyStringToCppFile(paylode, cppFilePath);
+        await compileAndExecuteCppFile(id, cppFilePath,username);
+}
 
 
 async function copyStringToCppFile(inputString, filePath) {
@@ -89,9 +93,8 @@ async function run() {
         const paylode= parsedValue.output;
         const id = parsedValue.id;
         const userName=parsedValue.userName;
-       
-        await copyStringToCppFile(paylode, cppFilePath);
-        await compileAndExecuteCppFile(id, cppFilePath,userName);
+       await runWorker(id,userName,paylode);
+        
       } catch (error) {
         console.error('Error parsing JSON:', error);
       }
