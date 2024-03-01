@@ -16,3 +16,27 @@ const code = normalCode
     .join('\\n\\n');      // Join the lines with "\n\n"
 
 console.log(`const code = "${code}";`);
+
+
+
+command for running kafka container
+
+docker compose up
+
+
+
+command for input data to a topic from cmd 
+
+kafka-console-producer.sh --broker-list localhost:9092 --topic code
+
+
+command for checking what is inside a tpic
+
+kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic code-output --from-beginning
+
+
+
+
+
+sampel input
+{"id":"69888","userName":"sudeep162002","output":"#include <iostream>\\n\\n    int main() {\\n\\n        std::cout << \"hello, World!\" << std::endl;\\n\\n        return 0;\\n    }"}

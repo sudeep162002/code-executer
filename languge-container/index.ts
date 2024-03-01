@@ -26,7 +26,7 @@ async function copyStringToCppFile(inputString, filePath) {
 
 const producer = kafka.producer();
  producer.connect()
-async function compileAndExecuteCppFile(filePath: string): Promise<void> {
+async function compileAndExecuteCppFile(id: string,filePath: string, username:string): Promise<void> {
     // Compile the C++ file
     exec(`g++ -o ${filePath}.out ${filePath}`, async (compileError, compileStdout, compileStderr) => {
         if (compileError) {
@@ -59,10 +59,16 @@ async function compileAndExecuteCppFile(filePath: string): Promise<void> {
             console.log(`Execution output: ${execStdout}`);
 
             // Publish the execution output to Kafka topic 'code-output'
+            const jsonOutput = JSON.stringify({
+              "id": id,
+              "userName": username,
+              "output": execStdout
+          });
+          
             await producer.send({
                 topic: 'code-output',
                 messages: [
-                    { value: execStdout }
+                    {value: jsonOutput }
                 ]
             });
         });
@@ -81,8 +87,24 @@ async function run() {
     eachMessage: async ({ topic, partition, message }) => {
       const stringValue: string = message.value?.toString('utf8') || '';
       console.log(`Received message: ${stringValue}`);
-      await copyStringToCppFile(stringValue, cppFilePath);
-      await compileAndExecuteCppFile(cppFilePath);
+      
+      try {
+        const parsedValue = JSON.parse(stringValue);
+        const paylode= parsedValue.output;
+        const id = parsedValue.id;
+        const userName=parsedValue.userName;
+        // const parsedValue = JSON.parse(stringValue);
+        // const parsedValue = stringValue;
+        // const id = "69888";
+        // const userName="sudeep162002";
+        console.log(paylode)
+        console.log(id)
+        console.log(userName)
+        await copyStringToCppFile(paylode, cppFilePath);
+        await compileAndExecuteCppFile(id, cppFilePath,userName);
+      } catch (error) {
+        console.error('Error parsing JSON:', error);
+      }
     },
   });
 }

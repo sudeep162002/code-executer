@@ -10,7 +10,7 @@ dist
 # Ignore operating system or editor files
 .DS_Store
 Thumbs.db
-
+.input.cpp.out
 # Ignore npm debug log
 npm-debug.log
 
