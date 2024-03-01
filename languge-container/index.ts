@@ -75,10 +75,6 @@ async function compileAndExecuteCppFile(id: string,filePath: string, username:st
     });
 }
 
-// compileAndExecuteCppFile(cppFilePath);
-// Example usage:
-// const cppFilePath = 'path/to/your/cpp/file.cpp'; // Update with your C++ file path
-
 async function run() {
   await consumer.connect();
   await consumer.subscribe({ topic: 'code' });
@@ -93,13 +89,7 @@ async function run() {
         const paylode= parsedValue.output;
         const id = parsedValue.id;
         const userName=parsedValue.userName;
-        // const parsedValue = JSON.parse(stringValue);
-        // const parsedValue = stringValue;
-        // const id = "69888";
-        // const userName="sudeep162002";
-        console.log(paylode)
-        console.log(id)
-        console.log(userName)
+       
         await copyStringToCppFile(paylode, cppFilePath);
         await compileAndExecuteCppFile(id, cppFilePath,userName);
       } catch (error) {
