@@ -6,7 +6,7 @@
   "scripts": {
     "start": "tsc -b && nodemon --exec ts-node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
-},
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -17,7 +17,6 @@
     "avsc": "^5.7.7",
     "kafka-node": "^5.0.0",
     "kafkajs": "^2.2.4",
-    "node-rdkafka": "^2.18.0",
     "node-redis-pubsub": "^5.0.0",
     "nodemon": "^3.1.0",
     "redis": "^4.6.13",

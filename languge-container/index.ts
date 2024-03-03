@@ -2,10 +2,20 @@ import { Kafka, logLevel } from 'kafkajs';
 import * as fs from 'fs';
 import { exec } from 'child_process';
 
+
+//for local development
+// const kafka = new Kafka({
+//   clientId: 'my-app',
+//   brokers: ['localhost:9092']
+// });
+
+
+//for container development
 const kafka = new Kafka({
   clientId: 'my-app',
-  brokers: ['localhost:9092']
+  brokers: ['kafka:9092']
 });
+
 
 const consumer = kafka.consumer({ groupId: 'kafka' });
 
@@ -51,7 +61,7 @@ async function compileAndExecuteCppFile(id: string,filePath: string, username:st
         console.log(`Compilation successful: ${compileStdout}`);
 
         // Execute the compiled C++ file
-        exec(`${filePath}.out`, async (execError, execStdout, execStderr) => {
+        exec(`./${filePath}.out`, async (execError, execStdout, execStderr) => {
             if (execError) {
                 console.error(`Execution failed: ${execError.message}`);
                 return;
