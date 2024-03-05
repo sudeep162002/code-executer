@@ -52,3 +52,9 @@ services:
     image: "confluentinc/cp-kafkacat"
     command: sleep infinity
 
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: examplepassword
+      MYSQL_DATABASE: mydatabase
+
