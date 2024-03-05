@@ -13,7 +13,7 @@ import { exec } from 'child_process';
 //for container development
 const kafka = new Kafka({
   clientId: 'my-app',
-  brokers: ['kafka:9092']
+  brokers: ['kafka:29092']
 });
 
 
@@ -91,7 +91,7 @@ async function compileAndExecuteCppFile(id: string,filePath: string, username:st
 
 async function run() {
   await consumer.connect();
-  await consumer.subscribe({ topic: 'code' });
+  await consumer.subscribe({ topic: 'cpp-code' });
 
   await consumer.run({
     eachMessage: async ({ topic, partition, message }) => {
