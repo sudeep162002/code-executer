@@ -40,3 +40,11 @@ kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic code-output 
 
 sampel input
 {"id":"69888","userName":"sudeep162002","output":"#include <iostream>\\n\\n    int main() {\\n\\n        std::cout << \"hello, World!\" << std::endl;\\n\\n        return 0;\\n    }"}
+
+
+
+kafka internal ip: kafka:29092
+kafka external ip:  localhost:9092
+
+
+use kafkacat container command to check status of queue    `kafkacat -b kafka:29092 -t code-output -C`
