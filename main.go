@@ -98,7 +98,7 @@ var runningJavaContainer int = 0
 var runningGolangContainer int = 0
 var runningCContainer int = 0
 
-func handleCode(codeReqJSON CodeRequest, lang string) {
+func handleCode(codeReqJSON CodeRequest) {
 	fmt.Println("Inside handle cpp function")
 
 	// Convert CodeRequest struct to JSON string
@@ -127,29 +127,119 @@ func handleCode(codeReqJSON CodeRequest, lang string) {
 	log.Println("Message published to Kafka")
 
 	if runningCppContainer == 0 {
-		switch lang {
-		case "cpp":
-			runner.CppRunner()
-			runningCppContainer += 1
-		case "c":
-			runner.CRunner()
-			runningCContainer += 1
-		case "golang":
-			runner.GoRunner()
-			runningGolangContainer += 1
-		case "java":
-			runner.JavaRunner()
-			runningJavaContainer += 1
-
-		default:
-			// Handle unknown language
-			fmt.Println("Unknown language:", lang)
-		}
+		runner.CppRunner()
+		runningCppContainer += 1
 		// runner.CppRunner()
 
 	}
+}
 
-	// Your code to handle the C++ code request goes here
+func handleJavaCode(codeReqJSON CodeRequest) {
+	fmt.Println("Inside handle java function")
+
+	// Convert CodeRequest struct to JSON string
+	codeReqJSONStr, err := json.Marshal(codeReqJSON)
+	if err != nil {
+		log.Fatalf("Error marshalling CodeRequest to JSON: %v", err)
+	}
+
+	fmt.Println(string(codeReqJSONStr))
+
+	// Initialize Kafka producer if not already initialized
+	if producer == nil {
+		brokers := []string{"localhost:9092"} // Define Kafka brokers
+		initKafkaProducer(brokers)            // Initialize Kafka producer without specifying topic
+	}
+
+	// Publish JSON string to Kafka topic
+	err = producer.WriteMessages(context.Background(), kafka.Message{
+		Topic: "java-code", // Specify the topic to publish messages to
+		Value: codeReqJSONStr,
+	})
+	if err != nil {
+		log.Fatalf("Error publishing message to Kafka: %v", err)
+	}
+
+	log.Println("Message published to Kafka")
+
+	if runningCppContainer == 0 {
+		runner.JavaRunner()
+		runningJavaContainer += 1
+		// runner.CppRunner()
+
+	}
+}
+
+func handleGoCode(codeReqJSON CodeRequest) {
+	fmt.Println("Inside handle cpp function")
+
+	// Convert CodeRequest struct to JSON string
+	codeReqJSONStr, err := json.Marshal(codeReqJSON)
+	if err != nil {
+		log.Fatalf("Error marshalling CodeRequest to JSON: %v", err)
+	}
+
+	fmt.Println(string(codeReqJSONStr))
+
+	// Initialize Kafka producer if not already initialized
+	if producer == nil {
+		brokers := []string{"localhost:9092"} // Define Kafka brokers
+		initKafkaProducer(brokers)            // Initialize Kafka producer without specifying topic
+	}
+
+	// Publish JSON string to Kafka topic
+	err = producer.WriteMessages(context.Background(), kafka.Message{
+		Topic: "go-code", // Specify the topic to publish messages to
+		Value: codeReqJSONStr,
+	})
+	if err != nil {
+		log.Fatalf("Error publishing message to Kafka: %v", err)
+	}
+
+	log.Println("Message published to Kafka")
+
+	if runningCppContainer == 0 {
+		runner.GoRunner()
+		runningGolangContainer += 1
+		// runner.CppRunner()
+
+	}
+}
+
+func handleCCode(codeReqJSON CodeRequest) {
+	fmt.Println("Inside handle cpp function")
+
+	// Convert CodeRequest struct to JSON string
+	codeReqJSONStr, err := json.Marshal(codeReqJSON)
+	if err != nil {
+		log.Fatalf("Error marshalling CodeRequest to JSON: %v", err)
+	}
+
+	fmt.Println(string(codeReqJSONStr))
+
+	// Initialize Kafka producer if not already initialized
+	if producer == nil {
+		brokers := []string{"localhost:9092"} // Define Kafka brokers
+		initKafkaProducer(brokers)            // Initialize Kafka producer without specifying topic
+	}
+
+	// Publish JSON string to Kafka topic
+	err = producer.WriteMessages(context.Background(), kafka.Message{
+		Topic: "c-code", // Specify the topic to publish messages to
+		Value: codeReqJSONStr,
+	})
+	if err != nil {
+		log.Fatalf("Error publishing message to Kafka: %v", err)
+	}
+
+	log.Println("Message published to Kafka")
+
+	if runningCppContainer == 0 {
+		runner.CRunner()
+		runningCContainer += 1
+		// runner.CppRunner()
+
+	}
 }
 
 // func handelCpp(codeReq CodeRequest) {
@@ -240,25 +330,6 @@ func insertData(db *gorm.DB) {
 			time.Sleep(1 * time.Second)
 		}
 	}
-
-	// The code below is commented out as it's unreachable due to the infinite loop above.
-	// Generate and insert random data into the Output table
-	// for i := 0; i < 10; i++ {
-	// 	reqID := rand.Intn(1000)
-	// 	username := fmt.Sprintf("User%d", i)
-	// 	codeOutput := fmt.Sprintf("Code output for reqID %d", reqID)
-
-	// 	output := Output{
-	// 		ReqID:      reqID,
-	// 		Username:   username,
-	// 		CodeOutput: codeOutput,
-	// 	}
-
-	// 	if err := db.Create(&output).Error; err != nil {
-	// 		log.Fatal(err)
-	// 	}
-	// }
-	// fmt.Println("Random data inserted successfully.")
 }
 
 func main() {
@@ -309,6 +380,18 @@ func main() {
 
 	// Create Kafka topic "cpp-code" if not already created
 	err = createKafkaTopic(producer, "cpp-code")
+	if err != nil {
+		log.Fatalf("Error creating Kafka topic: %v", err)
+	}
+	err = createKafkaTopic(producer, "java-code")
+	if err != nil {
+		log.Fatalf("Error creating Kafka topic: %v", err)
+	}
+	err = createKafkaTopic(producer, "go-code")
+	if err != nil {
+		log.Fatalf("Error creating Kafka topic: %v", err)
+	}
+	err = createKafkaTopic(producer, "c-code")
 	if err != nil {
 		log.Fatalf("Error creating Kafka topic: %v", err)
 	}
@@ -376,8 +459,19 @@ func main() {
 		// Process the output string concurrently using goroutines
 		go func() {
 			switch lang {
-			case "cpp", "c", "golang", "java":
-				handleCode(codeReq, lang)
+			case "cpp":
+				handleCode(codeReq)
+				// runningCppContainer += 1
+			case "c":
+				handleCCode(codeReq)
+				// runningCContainer += 1
+			case "golang":
+				handleGoCode(codeReq)
+				// runningGolangContainer += 1
+			case "java":
+				handleJavaCode(codeReq)
+				// runningJavaContainer += 1
+
 			default:
 				// Handle unknown language
 				fmt.Println("Unknown language:", lang)

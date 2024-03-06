@@ -16,7 +16,7 @@ import (
 )
 
 func JavaRunner() {
-	fmt.Println("inside handel cpp runner function")
+	fmt.Println("inside handel java runner function")
 	// Command to execute docker-compose up inside the container
 	cmd := exec.Command("docker-compose", "-f", "./java-languge-container/docker-compose.yml", "up")
 

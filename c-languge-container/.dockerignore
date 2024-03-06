@@ -1,0 +1,11 @@
+# Ignore hidden files and directories
+.*
+!.gitignore
+
+# Ignore specific files
+README.md
+LICENSE
+
+# Ignore directories
+node_modules
+vendor

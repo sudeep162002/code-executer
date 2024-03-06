@@ -117,3 +117,7 @@ func GoRunner(c *gin.Context) {
 }
 
 `
+
+
+
+always wrap your java code inside class named `HelloWorld`

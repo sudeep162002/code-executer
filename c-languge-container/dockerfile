@@ -1,0 +1,27 @@
+# Use Alpine Linux as base image
+FROM alpine:latest
+
+# Update package repositories and install necessary packages
+RUN apk update && \
+    apk upgrade && \
+    apk add --no-cache nodejs npm g++ make vim
+
+# Confirm installation
+RUN node --version && npm --version && g++ --version && vim --version
+
+# Install TypeScript globally
+RUN npm install -g ts-node
+
+# Set working directory
+WORKDIR /app
+
+# Copy package.json and install dependencies
+COPY package.json .
+
+RUN npm install
+
+# Copy the rest of the application
+COPY . .
+
+# Command to run the application
+CMD ["npm", "start"]
