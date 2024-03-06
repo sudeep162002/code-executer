@@ -6,8 +6,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
+	"os/signal"
+	"strconv"
+	"syscall"
 	"time"
 
 	// "os/signal"
@@ -19,6 +23,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/segmentio/kafka-go"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 	// "github.com/Shopify/sarama"
 	// "github.com/docker/docker/api/types"
 	// "github.com/docker/docker/api/types/container"
@@ -29,6 +35,19 @@ import (
 type CodeRequest struct {
 	ID       string `json:"id"`
 	Languge  string `json:"languge"`
+	UserName string `json:"userName"`
+	Output   string `json:"output"`
+}
+
+type Output struct {
+	ID         int `gorm:"primary_key"`
+	ReqID      int
+	Username   string
+	CodeOutput string
+}
+
+type Message struct {
+	ID       string `json:"id"`
 	UserName string `json:"userName"`
 	Output   string `json:"output"`
 }
@@ -79,7 +98,7 @@ var runningJavaContainer int = 0
 var runningGolangContainer int = 0
 var runningCContainer int = 0
 
-func handelCpp(codeReqJSON CodeRequest) {
+func handleCode(codeReqJSON CodeRequest, lang string) {
 	fmt.Println("Inside handle cpp function")
 
 	// Convert CodeRequest struct to JSON string
@@ -96,16 +115,6 @@ func handelCpp(codeReqJSON CodeRequest) {
 		initKafkaProducer(brokers)            // Initialize Kafka producer without specifying topic
 	}
 
-	// Create Kafka topic "cpp-code" if not already created
-	err = createKafkaTopic(producer, "cpp-code")
-	if err != nil {
-		log.Fatalf("Error creating Kafka topic: %v", err)
-	}
-	err = createKafkaTopic(producer, "code-output")
-	if err != nil {
-		log.Fatalf("Error creating Kafka topic: %v", err)
-	}
-
 	// Publish JSON string to Kafka topic
 	err = producer.WriteMessages(context.Background(), kafka.Message{
 		Topic: "cpp-code", // Specify the topic to publish messages to
@@ -118,8 +127,26 @@ func handelCpp(codeReqJSON CodeRequest) {
 	log.Println("Message published to Kafka")
 
 	if runningCppContainer == 0 {
-		runner.CppRunner()
-		runningCppContainer += 1
+		switch lang {
+		case "cpp":
+			runner.CppRunner()
+			runningCppContainer += 1
+		case "c":
+			runner.CRunner()
+			runningCContainer += 1
+		case "golang":
+			runner.GoRunner()
+			runningGolangContainer += 1
+		case "java":
+			runner.JavaRunner()
+			runningJavaContainer += 1
+
+		default:
+			// Handle unknown language
+			fmt.Println("Unknown language:", lang)
+		}
+		// runner.CppRunner()
+
 	}
 
 	// Your code to handle the C++ code request goes here
@@ -137,6 +164,102 @@ func handelCpp(codeReqJSON CodeRequest) {
 
 // 	// Your code to handle the C++ code request goes here
 // }
+
+func insertData(db *gorm.DB) {
+	// Seed random number generator
+	fmt.Println("this is insert data function")
+	rand.Seed(time.Now().UnixNano())
+
+	config := kafka.ReaderConfig{
+		Brokers:  []string{"localhost:9092"},
+		Topic:    "code-output",
+		GroupID:  "kafka1",
+		MinBytes: 10e3, // 10KB
+		MaxBytes: 10e6, // 10MB
+	}
+
+	// Create Kafka reader
+	reader := kafka.NewReader(config)
+	defer reader.Close()
+
+	// Create context to cancel consumer on termination signal
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	// Handle termination signal
+	signals := make(chan os.Signal, 1)
+	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
+	go func() {
+		select {
+		case <-signals:
+			fmt.Println("Received termination signal, shutting down consumer...")
+			cancel()
+		}
+	}()
+
+	// Start consuming messages
+	for {
+		select {
+		case <-ctx.Done():
+			fmt.Println("Context canceled, stopping consumer...")
+			return
+		default:
+			message, err := reader.ReadMessage(ctx)
+			if err != nil {
+				fmt.Printf("Error reading message: %v\n", err)
+				continue
+			}
+			// fmt.Printf("Received message: Key=%s, Value=%s, Partition=%d, Offset=%d\n",
+			// 	string(message.Key), string(message.Value), message.Partition, message.Offset)
+			var msg Message
+
+			if err := json.Unmarshal(message.Value, &msg); err != nil {
+				fmt.Printf("Error decoding JSON: %v\n", err)
+				continue
+			}
+			fmt.Println(msg)
+
+			reqID, err := strconv.Atoi(msg.ID)
+			if err != nil {
+				fmt.Println(err)
+			}
+			username := msg.UserName
+			codeOutput := msg.Output
+
+			output := Output{
+				ReqID:      reqID,
+				Username:   username,
+				CodeOutput: codeOutput,
+			}
+			if err := db.Create(&output).Error; err != nil {
+				log.Fatal(err)
+			}
+			fmt.Println("data inserted successfully.")
+			// fmt.Println(message.Value)
+			// Simulate some processing time
+			time.Sleep(1 * time.Second)
+		}
+	}
+
+	// The code below is commented out as it's unreachable due to the infinite loop above.
+	// Generate and insert random data into the Output table
+	// for i := 0; i < 10; i++ {
+	// 	reqID := rand.Intn(1000)
+	// 	username := fmt.Sprintf("User%d", i)
+	// 	codeOutput := fmt.Sprintf("Code output for reqID %d", reqID)
+
+	// 	output := Output{
+	// 		ReqID:      reqID,
+	// 		Username:   username,
+	// 		CodeOutput: codeOutput,
+	// 	}
+
+	// 	if err := db.Create(&output).Error; err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	// }
+	// fmt.Println("Random data inserted successfully.")
+}
 
 func main() {
 	r := gin.New()
@@ -162,6 +285,36 @@ func main() {
 	// Setup routes
 	// user_routes.SetupHelloRoutes(r)
 
+	dsn := "root:Sudeep@16@tcp(localhost:3306)/codeDatabase?charset=utf8mb4&parseTime=True&loc=Local"
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	sqlDB, err := db.DB()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer sqlDB.Close()
+
+	// Auto migrate the Output table
+	if err := db.AutoMigrate(&Output{}); err != nil {
+		log.Fatal(err)
+	}
+
+	err = createKafkaTopic(producer, "code-output")
+	if err != nil {
+		log.Fatalf("Error creating Kafka topic: %v", err)
+	}
+
+	// Create Kafka topic "cpp-code" if not already created
+	err = createKafkaTopic(producer, "cpp-code")
+	if err != nil {
+		log.Fatalf("Error creating Kafka topic: %v", err)
+	}
+
+	go insertData(db)
+
 	//welcome route
 	r.GET("/", func(c *gin.Context) {
 		// Create a JSON object
@@ -170,6 +323,39 @@ func main() {
 		}
 
 		fmt.Println(response)
+		// Return the JSON response with a custom status code
+		c.JSON(http.StatusOK, response)
+	})
+
+	r.GET("/:reqId/:username", func(c *gin.Context) {
+		// Extract the req and username parameters from the URL
+		reqId := c.Param("reqId")
+		username := c.Param("username")
+
+		var output Output
+		if err := db.Where("req_id = ? AND username = ?", reqId, username).First(&output).Error; err != nil {
+			fmt.Println("still in processing..........")
+			response := gin.H{
+				"req_id":   reqId,
+				"username": username,
+				"output":   "still in processing..........",
+				"message":  "your code is being processing in backend please wait",
+			}
+
+			// Return the JSON response with a custom status code
+			c.JSON(http.StatusOK, response)
+
+			return
+		}
+
+		// Create a JSON response
+		response := gin.H{
+			"req_id":   output.ReqID,
+			"username": output.Username,
+			"output":   output.CodeOutput,
+			"message":  "Database query successful",
+		}
+
 		// Return the JSON response with a custom status code
 		c.JSON(http.StatusOK, response)
 	})
@@ -190,20 +376,12 @@ func main() {
 		// Process the output string concurrently using goroutines
 		go func() {
 			switch lang {
-			case "cpp":
-				handelCpp(codeReq)
-			case "c":
-				handelCpp(codeReq)
-			case "golang":
-				handelCpp(codeReq)
-			case "java":
-				handelCpp(codeReq)
-
+			case "cpp", "c", "golang", "java":
+				handleCode(codeReq, lang)
 			default:
 				// Handle unknown language
 				fmt.Println("Unknown language:", lang)
 			}
-
 		}()
 
 		// Return the response immediately

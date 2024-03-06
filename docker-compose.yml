@@ -54,7 +54,9 @@ services:
 
   mysql:
     image: mysql:latest
+    ports:
+      - '3306:3306'  # Expose port 3306 for MySQL
     environment:
-      MYSQL_ROOT_PASSWORD: examplepassword
-      MYSQL_DATABASE: mydatabase
+      MYSQL_ROOT_PASSWORD: Sudeep@16
+      MYSQL_DATABASE: codeDatabase
 
