@@ -50,7 +50,7 @@ kafka external ip:  localhost:9092
 use kafkacat container command to check status of queue    `kafkacat -b kafka:29092 -t code-output -C`
 
 
-code to be used when calling docker image from docker hub
+code to be used when calling docker image from docker hub 
 
 `
 package runner
