@@ -44,9 +44,8 @@ We believe in fostering a collaborative environment. Your contributions are valu
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/your-username/your-repo-name.git
+   git clone https://github.com/sudeep162002/code-executer
    ```
-   Replace `https://github.com/your-username/your-repo-name.git` with the actual URL of your repository.
 
 2. **Define Port:**
    Create a file named `.env` in the base directory of your project. Add a line specifying the port you want to use for the API gateway:
@@ -107,15 +106,50 @@ If you encounter any issues during setup, you can use the following commands to 
 
 This platform utilizes code deparser and parser functionalities to prepare code for execution and display the results.
 
+ **Code Deparser and Parser (TypeScript):**
+
+```typescript
+// Code Deparser: Transforms code for execution
+const deparser = (inputString: string): string => {
+  return inputString
+    .replace(/\\n/g, '\n')   // Restore actual line breaks
+    .replace(/^   /gm, '')   // Remove leading indentation
+    .replace(/\\"/g, '"');   // Replace escaped double quotes
+};
+
+// Code Parser: Formats code for display
+const parser = (normalCode: string): string => {
+  return normalCode
+    .replace(/"/g, '\\"')    // Escape double quotes
+    .split('\n')           // Split into lines
+    .map(line => `   ${line}`) // Indent each line
+    .join('\\n\\n');       // Join lines with "\n\n"
+};
+```
+
+**Usage:**
+
+**Deparsing Code for Execution:**
+
+```typescript
+const preparedCode = deparser(inputCode);
+// Send preparedCode to worker for execution
+```
+
+**Parsing Results for Display:**
+
+```typescript
+const formattedOutput = parser(executionResult);
+// Display formattedOutput to the user
+```
+
+
 **Execution:**
 
 1. Send a POST request to the API endpoint (`http://localhost:<API_PORT>/execute`) with the sample input body containing your code.
-2. The platform parses, executes, and stores the results.
-3. The platform uses Server-Sent Events (SSE) to push execution results to the frontend in real-time.
+2. The platform uses Server-Sent Events (SSE) to push execution results to the frontend in real-time.
 
 **Remember:**
 
 - Replace placeholders like `<API_PORT>` with appropriate values.
 - Ensure your code is properly formatted and adheres to the supported language's syntax.
-
-I hope this enhanced response effectively incorporates the strengths of both Response A and Response B, addressing feedback to create a well-structured and informative README.md file!
