@@ -29,10 +29,6 @@ Maximizes CPU utilization by employing multithreading within worker containers, 
 - **Efficient Docker Management:** Golang excels at handling the Docker engine daemon effectively, contributing to the platform's smooth operation.
 - **Concurrency and Performance:** Well-suited for building concurrent and high-performance applications.
 
-**Contributing to the Project:**
-
-We believe in fostering a collaborative environment. Your contributions are valued! Feel free to explore the project, share your ideas, and submit pull requests to shape the future of Executionery.
-
 ## Local Development Setup
 
 **Prerequisites:**
@@ -153,3 +149,59 @@ const formattedOutput = parser(executionResult);
 
 - Replace placeholders like `<API_PORT>` with appropriate values.
 - Ensure your code is properly formatted and adheres to the supported language's syntax.
+
+
+**Contributing to the Project:**
+
+We believe in fostering a collaborative environment! Your contributions are valued! Feel free to explore the project, share your ideas, and submit pull requests to shape the future of Executioner.
+
+**Roadmap (To-Do):**
+
+- **Frontend Development:** Create a user-friendly interface for interacting with the platform. This includes features like code submission, execution monitoring, and result display.
+- **Prometheus Monitoring:** Integrate with Prometheus for detailed infrastructure and application monitoring, providing valuable insights into platform performance and resource usage.
+- **CI/CD Pipeline:** Establish a continuous integration and continuous delivery (CI/CD) pipeline utilizing GitHub Actions. This will automate tasks like building and pushing Docker images for supported languages to a Docker hub repository, streamlining the deployment process and ensuring consistent updates.
+- **Language Support Expansion:** Gradually expand support for additional programming languages, catering to a wider developer audience.
+
+**APIs:**
+
+**Execution API:**
+
+```
+Method: POST
+URL: http://localhost:5000/run-code
+Body:
+```
+
+```json
+{
+  "id": "69896",
+  "userName": "sudeep162002",
+  "Language": "java",
+  "output": "..."  // Paste your code here
+}
+```
+
+**Execution Status and Output API:**
+
+```
+Method: GET
+URL: http://localhost:5000/{reqId}/{username}
+```
+
+Replace `{reqId}` with the ID of the execution request and `{username}` with the username for whom the request was made.
+
+**Response:**
+
+```json
+{
+  "status": "pending" | "running" | "completed" | "failed",
+  "output": "..." (only present if status is "completed")
+}
+```
+
+**Note:**
+
+- Replace placeholders like `<API_PORT>` with appropriate values.
+- Ensure your code is properly formatted and adheres to the supported language's syntax.
+
+I hope this enhanced response effectively addresses your requirements and provides a clear roadmap for future development!
