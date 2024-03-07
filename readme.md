@@ -151,7 +151,7 @@ const formattedOutput = parser(executionResult);
 - Ensure your code is properly formatted and adheres to the supported language's syntax.
 
 
-**Contributing to the Project:**
+## Contributing to the Project
 
 We believe in fostering a collaborative environment! Your contributions are valued! Feel free to explore the project, share your ideas, and submit pull requests to shape the future of Executioner.
 
