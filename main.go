@@ -127,8 +127,9 @@ func handleCode(codeReqJSON CodeRequest) {
 	log.Println("Message published to Kafka")
 
 	if runningCppContainer == 0 {
-		runner.CppRunner()
 		runningCppContainer += 1
+		runner.CppRunner()
+
 		// runner.CppRunner()
 
 	}
@@ -162,9 +163,10 @@ func handleJavaCode(codeReqJSON CodeRequest) {
 
 	log.Println("Message published to java-code Kafka")
 
-	if runningCppContainer == 0 {
-		runner.JavaRunner()
+	if runningJavaContainer == 0 {
 		runningJavaContainer += 1
+		runner.JavaRunner()
+
 		// runner.CppRunner()
 
 	}
@@ -198,9 +200,10 @@ func handleGoCode(codeReqJSON CodeRequest) {
 
 	log.Println("Message published to Kafka")
 
-	if runningCppContainer == 0 {
-		runner.GoRunner()
+	if runningGolangContainer == 0 {
 		runningGolangContainer += 1
+		runner.GoRunner()
+
 		// runner.CppRunner()
 
 	}
@@ -234,9 +237,10 @@ func handleCCode(codeReqJSON CodeRequest) {
 
 	log.Println("Message published to Kafka")
 
-	if runningCppContainer == 0 {
-		runner.CRunner()
+	if runningCContainer == 0 {
 		runningCContainer += 1
+		runner.CRunner()
+
 		// runner.CppRunner()
 
 	}
