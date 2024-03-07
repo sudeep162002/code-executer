@@ -2,7 +2,7 @@
 
 **Introduction**
 
-Welcome to [Your Platform Name], your one-stop shop for seamless and efficient code execution! Inspired by platforms like LeetCode, we offer a **highly scalable and user-friendly** environment to execute your code with ease.
+Welcome to Executioner, your one-stop shop for seamless and efficient code execution! Inspired by platforms like LeetCode, we offer a **highly scalable and user-friendly** environment to execute your code with ease.
 
 **Unmatched Scalability:**
 
@@ -31,6 +31,6 @@ Maximizes CPU utilization by employing multithreading within worker containers, 
 
 **Contributing to the Project:**
 
-We believe in fostering a collaborative environment. Your contributions are valued! Feel free to explore the project, share your ideas, and submit pull requests to shape the future of [Your Platform Name].
+We believe in fostering a collaborative environment. Your contributions are valued! Feel free to explore the project, share your ideas, and submit pull requests to shape the future of Executioner.
 
 **Join us in creating the ultimate code execution platform!**
