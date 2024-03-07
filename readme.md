@@ -31,6 +31,91 @@ Maximizes CPU utilization by employing multithreading within worker containers, 
 
 **Contributing to the Project:**
 
-We believe in fostering a collaborative environment. Your contributions are valued! Feel free to explore the project, share your ideas, and submit pull requests to shape the future of Executioner.
+We believe in fostering a collaborative environment. Your contributions are valued! Feel free to explore the project, share your ideas, and submit pull requests to shape the future of Executionery.
 
-**Join us in creating the ultimate code execution platform!**
+## Local Development Setup
+
+**Prerequisites:**
+
+- **Golang:** Download and install Golang from [https://go.dev/](https://go.dev/). Ensure you have set the `GOPATH` and `GOBIN` environment variables correctly.
+- **Docker:** Download and install Docker from [https://www.docker.com/](https://www.docker.com/).
+
+**Steps:**
+
+1. **Clone the Repository:**
+   ```bash
+   git clone https://github.com/your-username/your-repo-name.git
+   ```
+   Replace `https://github.com/your-username/your-repo-name.git` with the actual URL of your repository.
+
+2. **Define Port:**
+   Create a file named `.env` in the base directory of your project. Add a line specifying the port you want to use for the API gateway:
+
+   ```
+   API_PORT=8080
+   ```
+
+   Replace `8080` with your desired port number.
+
+3. **Install Dependencies:**
+   Open a terminal in the project directory and run:
+
+   ```bash
+   go get
+   ```
+
+   This command downloads all the necessary Go dependencies listed in the `go.mod` file.
+
+4. **Run the Platform:**
+   Start all components using Docker Compose:
+
+   ```bash
+   docker-compose up
+   ```
+
+   This command builds and runs the Docker images for your platform, including Kafka, MySQL, and other dependencies.
+
+**Troubleshooting:**
+
+If you encounter any issues during setup, you can use the following commands to check the status of your Kafka queues:
+
+1. **Open a Kafka container shell:**
+   ```bash
+   docker exec -it kafka bash
+   ```
+
+2. **Use `kafkacat` to check queue contents:**
+   ```bash
+   kafkacat -b kafka:29092 -t topic-you-want-to-check -C
+   ```
+   Replace `topic-you-want-to-check` with the actual name of the topic you want to inspect.
+
+## Sample and Usage
+
+**Sample Input Body:**
+
+```json
+{
+  "id": "69896",
+  "userName": "sudeep162002",
+  "Language": "java",
+  "output": "..."  // Paste your code here
+}
+```
+
+**Code Deparser and Parser:**
+
+This platform utilizes code deparser and parser functionalities to prepare code for execution and display the results.
+
+**Execution:**
+
+1. Send a POST request to the API endpoint (`http://localhost:<API_PORT>/execute`) with the sample input body containing your code.
+2. The platform parses, executes, and stores the results.
+3. The platform uses Server-Sent Events (SSE) to push execution results to the frontend in real-time.
+
+**Remember:**
+
+- Replace placeholders like `<API_PORT>` with appropriate values.
+- Ensure your code is properly formatted and adheres to the supported language's syntax.
+
+I hope this enhanced response effectively incorporates the strengths of both Response A and Response B, addressing feedback to create a well-structured and informative README.md file!
