@@ -12,12 +12,12 @@ import { exec } from 'child_process';
 
 //for container development
 const kafka = new Kafka({
-  clientId: 'my-app',
+  clientId: 'my-app-go',
   brokers: ['kafka:29092']
 });
 
 
-const consumer = kafka.consumer({ groupId: 'kafka' });
+const consumer = kafka.consumer({ groupId: 'kafka-go' });
 
 const cppFilePath = 'input.cpp';
 

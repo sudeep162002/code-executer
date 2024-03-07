@@ -157,10 +157,10 @@ func handleJavaCode(codeReqJSON CodeRequest) {
 		Value: codeReqJSONStr,
 	})
 	if err != nil {
-		log.Fatalf("Error publishing message to Kafka: %v", err)
+		log.Fatalf("Error publishing message to java-code Kafka: %v", err)
 	}
 
-	log.Println("Message published to Kafka")
+	log.Println("Message published to java-code Kafka")
 
 	if runningCppContainer == 0 {
 		runner.JavaRunner()
