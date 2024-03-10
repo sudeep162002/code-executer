@@ -73,6 +73,7 @@ func createKafkaTopic(producer *kafka.Writer, topic string) error {
 	}
 
 	// Create Kafka connection
+	// conn, err := config.Dial("tcp", "kafka:9092") //for k8 intigrations
 	conn, err := config.Dial("tcp", "localhost:9092")
 	if err != nil {
 		return fmt.Errorf("error connecting to Kafka broker: %v", err)

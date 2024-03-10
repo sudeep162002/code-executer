@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cpp-code-runner
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: cpp-code-runner
+  template:
+    metadata:
+      labels:
+        app: cpp-code-runner
+    spec:
+      containers:
+      - name: cpp-code-runner
+        image: sudeep162002/cpp-code-runner:latest
+        # Add additional configuration for the container if needed
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: java-code-runner
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: java-code-runner
+  template:
+    metadata:
+      labels:
+        app: java-code-runner
+    spec:
+      containers:
+      - name: java-code-runner
+        image: sudeep162002/java-code-runner:latest
+        # Add additional configuration for the container if needed
